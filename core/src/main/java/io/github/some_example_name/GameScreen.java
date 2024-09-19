@@ -41,9 +41,12 @@ public class GameScreen implements Screen {
 
     int dropCount = 0; // сколько тараканов или мивин нападало в суп
     int randomInt; // падение тараканов в мивину
-    int clickerCoin; // крипта
+    int clickerCoin = 0; // крипта
 
+    boolean spacePressed;
 
+    float timer = 30;  // Устанавливаем таймер на 30 секунд
+    boolean timerRunning = true;  // Флаг для отслеживания состояния таймера
 
 
     public GameScreen(Drop game) {
@@ -94,6 +97,20 @@ public class GameScreen implements Screen {
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
             bucketSprite.translateX(-speed * delta);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            // Проверяем, была ли уже нажата клавиша
+            if (!spacePressed) {
+                setClickerCoin(1);  // Увеличиваем счетчик на 1
+                spacePressed = true;  // Отмечаем, что клавиша нажата
+            }
+        } else {
+            spacePressed = false;  // Сбрасываем состояние, если клавиша отпущена
+        }
+    }
+
+    private void setClickerCoin(int x) {
+        clickerCoin += x;
     }
 
     private void logic() {
@@ -126,10 +143,16 @@ public class GameScreen implements Screen {
                 dropSprites.removeIndex(i);
                 dropSound.play();
                 dropCount++;
-                if (dropCount == 1){
-                    //game.setScreen(new GameScreen());
+                if (dropCount == 30 || clickerCoin == 30){
+                    //game.setScreen(new GameScreen()); // добавить выйграшное окно
                     //dispose();
                 }
+
+                if (!timerRunning){
+                    //game.setScreen(new GameScreen()); // добавить проигравшее окно
+                    //dispose();
+                }
+
             }
         }
 
@@ -138,7 +161,16 @@ public class GameScreen implements Screen {
             dropTimer = 0; // Reset the timer
             createDroplet(); // Create the droplet
         }
+
+        if (timerRunning) {
+            timer -= delta;  // Вычитаем прошедшее время
+            if (timer <= 0) {
+                timer = 0;  // Останавливаем таймер, когда он достигнет 0
+                timerRunning = false;  // Таймер завершен
+            }
+        }
     }
+
 
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
@@ -160,6 +192,8 @@ public class GameScreen implements Screen {
         game.font = new BitmapFont();
         game.font.getData().setScale(0.2f); // довольно сносно получилось
         game.font.draw(game.batch,"Food :" + dropCount ,65, 48);
+        game.font.draw(game.batch,"ClickerCoin :" + clickerCoin ,60, 45);
+        game.font.draw(game.batch, "time: " + (int) timer + " s", 4, 48);
 
         game.batch.end();
     }
