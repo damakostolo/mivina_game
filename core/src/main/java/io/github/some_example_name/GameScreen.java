@@ -144,13 +144,12 @@ public class GameScreen implements Screen {
                 dropSound.play();
                 dropCount++;
                 if (dropCount == 30 || clickerCoin == 30){
-                    //game.setScreen(new GameScreen()); // добавить выйграшное окно
-                    //dispose();
+                    game.setScreen(new GameWin(game));
+
                 }
 
                 if (!timerRunning){
-                    //game.setScreen(new GameScreen()); // добавить проигравшее окно
-                    //dispose();
+                    game.setScreen(new GameWin(game)); // добавить проигравшее окно
                 }
 
             }
